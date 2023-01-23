@@ -6,8 +6,8 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using HeartBeatSnooper.contracts;
+using System.Text.Json;
 
 namespace HeartBeatSnooper
 {
@@ -22,7 +22,7 @@ namespace HeartBeatSnooper
             
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var fileSnooperPing = JsonConvert.DeserializeObject<FileSnooperPingData>(requestBody);
+            var fileSnooperPing = JsonSerializer.Deserialize<FileSnooperPingData>(requestBody);
             log.LogInformation("Identifier: {identifier}, time sent: {timeSent}", fileSnooperPing.Identifier, fileSnooperPing.TimeSent);
           
 
