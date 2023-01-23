@@ -24,7 +24,7 @@ namespace HeartBeatSnooper.Services
         internal static void Create<T>(T data)
         {
             var db = GetClient().GetDatabase(SettingsWorker.GetEnvironmentVariable("MongoDBName"));
-            var collection = db.GetCollection<T>("HeartBeatDetails");
+            var collection = db.GetCollection<T>(SettingsWorker.GetEnvironmentVariable("MongoDBCollection"));
 
             collection.InsertOne(data);
         }
