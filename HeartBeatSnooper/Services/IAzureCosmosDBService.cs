@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace HeartBeatSnooper.Services
 {
-    interface IAzureCosmosDBService
+    public interface IAzureCosmosDBService
     {
-        public void Create<T>(T data);
+        void Create<T>(T data);
     }
 }

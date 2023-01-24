@@ -1,4 +1,7 @@
-﻿using System;
+﻿using HeartBeatSnooper.Workers;
+using Microsoft.Extensions.Configuration;
+using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +11,22 @@ namespace HeartBeatSnooper.Services
 {
     internal class MongoAzureDBService : IAzureCosmosDBService
     {
-        public MongoAzureDBService()
+        private readonly IConfiguration _config;
+        private readonly MongoClient _client;
+
+
+        public MongoAzureDBService(IConfiguration config)
         {
-            
+            _config = config;
+            var connString = _config.GetValue<string>("MongoConnectionString");
+            _client = new MongoClient(connString);
         }
         public void Create<T>(T data)
         {
-            throw new NotImplementedException();
+            var db = _client.GetDatabase(_config.GetValue<string>("MongoDBName"));
+            var collection = db.GetCollection<T>(_config.GetValue<string>("MongoDBCollection"));
+
+            collection.InsertOne(data);
         }
     }
 }

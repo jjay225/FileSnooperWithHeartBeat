@@ -17,10 +17,14 @@ namespace HeartBeatSnooper
     public class HeartBeatChecker
     {
         private readonly IConfiguration _config;
+        private readonly IAzureCosmosDBService _azureMongoDBService;
 
-        public HeartBeatChecker(IConfiguration config)
+        public HeartBeatChecker(
+            IConfiguration config,
+            IAzureCosmosDBService azureMongoDBService)
         {
-            _config = config;           
+            _config = config;
+            _azureMongoDBService = azureMongoDBService;
         }
 
         [FunctionName("HeartBeatChecker")]
@@ -29,14 +33,14 @@ namespace HeartBeatSnooper
             ILogger log)
         {
             log.LogInformation("HeartBeatChecker received a heartbeat action");
-            var test = _config.GetValue<string>("MongoDBName");
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var fileSnooperPing = JsonSerializer.Deserialize<FileSnooperPingData>(requestBody);
                 log.LogInformation("Identifier: {identifier}, time sent: {timeSent}", fileSnooperPing.Identifier, fileSnooperPing.TimeSent);
 
-                MongoDBService.Create(fileSnooperPing);
+                _azureMongoDBService.Create(fileSnooperPing);
+
             }
             catch (Exception ex)
             {
