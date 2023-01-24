@@ -37,7 +37,9 @@ namespace HeartBeatSnooper
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var fileSnooperPing = JsonSerializer.Deserialize<FileSnooperPingData>(requestBody);
+                
                 log.LogInformation("Identifier: {identifier}, time sent: {timeSent}", fileSnooperPing.Identifier, fileSnooperPing.TimeSent);
+                log.LogInformation("Testing IConfiguration: {DB}", _config.GetValue<string>("MongoDBName"));
 
                 _azureMongoDBService.Create(fileSnooperPing);
 
@@ -45,10 +47,8 @@ namespace HeartBeatSnooper
             catch (Exception ex)
             {
                 log.LogError("Exception in HeartBeatChecker function! Details: {error}", ex.Message);
-                return new ExceptionResult(ex, false);
-            }
-
-           
+                return new ExceptionResult(ex, true);
+            }           
 
             return new OkResult();
         }

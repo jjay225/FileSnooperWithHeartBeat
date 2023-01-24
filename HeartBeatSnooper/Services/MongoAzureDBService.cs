@@ -14,10 +14,9 @@ namespace HeartBeatSnooper.Services
         private readonly IConfiguration _config;
         private readonly MongoClient _client;
 
-
         public MongoAzureDBService(IConfiguration config)
         {
-            _config = config;
+            _config = config;//future change this to the IOptions pattern for config
             var connString = _config.GetValue<string>("MongoConnectionString");
             _client = new MongoClient(connString);
         }
