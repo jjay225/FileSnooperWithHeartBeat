@@ -12,7 +12,7 @@ namespace HeartBeatSnooper.Services
     {
         private static readonly MongoClient _client;
         static MongoDBService()
-        {
+        {          
             _client = new MongoClient(SettingsWorker.GetEnvironmentVariable("MongoConnectionString"));
         }
 
