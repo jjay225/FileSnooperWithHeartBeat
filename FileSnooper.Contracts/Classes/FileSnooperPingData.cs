@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HeartBeatSnooper.contracts
+namespace FileSnooper.Contracts.Classes
 {
-    internal class FileSnooperPingData
+    public class FileSnooperPingData
     {
         public string Identifier { get; set; }
         public DateTime TimeSent { get; set; }

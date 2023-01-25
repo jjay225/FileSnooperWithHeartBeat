@@ -6,11 +6,11 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using HeartBeatSnooper.contracts;
 using System.Text.Json;
 using HeartBeatSnooper.Services;
 using System.Web.Http;
 using Microsoft.Extensions.Configuration;
+using FileSnooper.Contracts.Classes;
 
 namespace HeartBeatSnooper
 {

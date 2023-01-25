@@ -24,4 +24,7 @@
   <ItemGroup>
     <Folder Include="Extensions\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FileSnooper.Contracts\FileSnooper.Contracts.csproj" />
+  </ItemGroup>
 </Project>
