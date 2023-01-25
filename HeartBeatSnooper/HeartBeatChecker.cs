@@ -39,7 +39,6 @@ namespace HeartBeatSnooper
                 var fileSnooperPing = JsonSerializer.Deserialize<FileSnooperPingData>(requestBody);
                 
                 log.LogInformation("Identifier: {identifier}, time sent: {timeSent}", fileSnooperPing.Identifier, fileSnooperPing.TimeSent);
-                log.LogInformation("Testing IConfiguration: {DB}", _config.GetValue<string>("MongoDBName"));
 
                 _azureMongoDBService.Create(fileSnooperPing);
 

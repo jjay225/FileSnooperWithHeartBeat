@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "FileSnooper": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
