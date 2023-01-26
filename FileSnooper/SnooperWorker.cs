@@ -1,9 +1,11 @@
+using FileSnooper.Contracts.Classes;
 using FileSnooper.Helpers;
 using FileSnooper.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -19,32 +21,38 @@ namespace FileSnooper
         private readonly ILogger<SnooperWorker> _logger;
         private readonly ISnooperService _snooperService;
         private readonly IConfiguration _config;
+        private readonly IAzureHeartBeatService _azureHeartBeatService;
         private readonly int _snoopDelayInMinutes;
+        private readonly List<FileMonitorPaths> _fileMonitorPaths;
         private FileSystemWatcher FileSnooper1 { get; set; }
         private FileSystemWatcher FileSnooper2 { get; set; }
         private FileSystemWatcher FileSnooper3 { get; set; }
-        private List<FileMonitorPaths> FileMonitorPaths { get; set; }
         private string FileTypeToMonitor { get; set; }
         private int PathCount { get; set; }
 
-        public SnooperWorker(ILogger<SnooperWorker> logger, ISnooperService snooperService, IConfiguration config)
+        public SnooperWorker(
+            ILogger<SnooperWorker> logger,
+            ISnooperService snooperService,
+            IConfiguration config,
+            IAzureHeartBeatService azureHeartBeatService,
+            IOptions<List<FileMonitorPaths>> fileMonitorPaths)
         {
             _logger = logger;
             _snooperService = snooperService;
             _config = config;
+            _azureHeartBeatService = azureHeartBeatService;
+            
             _snoopDelayInMinutes = _config.GetValue<int>("SnoopDelayInMinutes");
-            FileMonitorPaths = new List<FileMonitorPaths>();
-            FileTypeToMonitor = _config.GetValue<string>("FileTypeToMonitor");
-            IConfigurationSection section = _config.GetSection("FileMonitorPaths");
+            _fileMonitorPaths = fileMonitorPaths.Value;            
 
-            section.Bind(FileMonitorPaths);
+            FileTypeToMonitor = _config.GetValue<string>("FileTypeToMonitor");            
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Service startup.");
 
-            PathCount = FileMonitorPaths.Count;
+            PathCount = _fileMonitorPaths.Count;
 
             _logger.LogInformation("Snooping delay is {delay} minute(s), we are monitoring {pathCount} path(s)", _snoopDelayInMinutes, PathCount);
 
@@ -60,7 +68,7 @@ namespace FileSnooper
                 throw new Exception("Cannot proceed with start, to many file paths specified");
             }
 
-            LoopThroughPathsAndSetupWatchers(FileMonitorPaths.Select(x => x.Source).ToList());
+            LoopThroughPathsAndSetupWatchers(_fileMonitorPaths.Select(x => x.Source).ToList());
 
             SetupChangedEvents();
             SetupCreatedEvents();
@@ -194,8 +202,9 @@ namespace FileSnooper
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(TimeSpan.FromMinutes(_snoopDelayInMinutes), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(_snoopDelayInMinutes), stoppingToken);                
                 await _snooperService.UploadFilesInCache();
+                await _azureHeartBeatService.Pulse();
             }
         }
 
@@ -223,7 +232,7 @@ namespace FileSnooper
             }
         }
 
-        private bool CheckIfTmpFile(string fullPath)
+        private static bool CheckIfTmpFile(string fullPath)
         {
             var ext = Path.GetExtension(fullPath);
             if (ext.ToLower() == ".tmp")

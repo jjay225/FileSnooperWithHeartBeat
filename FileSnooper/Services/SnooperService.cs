@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using System.IO;
 using FileSnooper.Helpers;
 using Microsoft.Extensions.FileProviders.Physical;
+using Microsoft.Extensions.Options;
+using FileSnooper.Contracts.Classes;
 
 namespace FileSnooper.Services
 {
@@ -22,9 +24,9 @@ namespace FileSnooper.Services
         private readonly ICacheService _cacheService;
         private readonly TimeSpan _pauseBetweenFailures = TimeSpan.FromMilliseconds(10000);
         private readonly int _pollyMaxRetryAttempts = 3;
+        private readonly List<FileMonitorPaths> _fileMonitorPaths;
 
         private static AsyncRetryPolicy RetryPolicyAsync { get; set; }
-        private List<FileMonitorPaths> FileMonitorPaths { get; set; }
         private string CurrentFileName { get; set; }
 
         //private string CurrentFilePath { get; set; }
@@ -34,15 +36,14 @@ namespace FileSnooper.Services
         public SnooperService(
             ILogger<SnooperService> logger,
             IConfiguration config,
-            ICacheService cacheService)
+            ICacheService cacheService,
+            IOptions<List<FileMonitorPaths>> fileMonitorPaths)
         {
             _logger = logger;
             _config = config;
             _cacheService = cacheService;
-            FileMonitorPaths = new List<FileMonitorPaths>();
-            IConfigurationSection section = _config.GetSection("FileMonitorPaths");
-
-            section.Bind(FileMonitorPaths);
+            _fileMonitorPaths = fileMonitorPaths.Value;
+            
             SetupRetryPolicy();
         }
 
@@ -93,7 +94,7 @@ namespace FileSnooper.Services
 
                     if (File.Exists(CurrentFilePath))
                     {
-                        foreach (var item in FileMonitorPaths)
+                        foreach (var item in _fileMonitorPaths)
                         {
                             SetFileTargetPath(item, ref FileTargetPath, ref CurrentFilePath);
                         }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +19,10 @@ namespace FileSnooper.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly string _identifier;
         private readonly string _azureHeartBeatServiceFunctionUrlPath;
-
+        //private readonly JsonSerializerOptions _jsonSerializerOptions = new()
+        //{
+        //    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        //};
         public const string ClientName = "AzureHeartBeat";
 
         public AzureHeartBeatService(
@@ -43,6 +47,9 @@ namespace FileSnooper.Services
                 Identifier = _identifier,
                 TimeSent = DateTime.Now
             };
+
+            var serializedContent = JsonSerializer.Serialize(pingData);
+            _logger.LogDebug("Ping Data to send: {pingData}", serializedContent);
 
             var clientResponse = await client.PostAsJsonAsync(requestUri: _azureHeartBeatServiceFunctionUrlPath, value: pingData);
             var stringResponse = await clientResponse.Content.ReadAsStringAsync();//do more with this later maybe

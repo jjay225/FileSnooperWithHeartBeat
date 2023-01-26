@@ -18,7 +18,10 @@ namespace HeartBeatSnooper
     {
         private readonly IConfiguration _config;
         private readonly IAzureCosmosDBService _azureMongoDBService;
-
+        private readonly JsonSerializerOptions _jsonSerializerOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
         public HeartBeatChecker(
             IConfiguration config,
             IAzureCosmosDBService azureMongoDBService)
@@ -33,10 +36,11 @@ namespace HeartBeatSnooper
             ILogger log)
         {
             log.LogInformation("HeartBeatChecker received a heartbeat action");
+            
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                var fileSnooperPing = JsonSerializer.Deserialize<FileSnooperPingData>(requestBody);
+                var fileSnooperPing = JsonSerializer.Deserialize<FileSnooperPingData>(requestBody, _jsonSerializerOptions);
                 
                 log.LogInformation("Identifier: {identifier}, time sent: {timeSent}", fileSnooperPing.Identifier, fileSnooperPing.TimeSent);
 
