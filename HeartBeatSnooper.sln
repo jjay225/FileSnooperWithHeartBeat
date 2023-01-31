@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeartBeatSnooper", "HeartBe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileSnooper", "FileSnooper\FileSnooper.csproj", "{632DFD28-38D2-4030-BF4C-A3777B3E9090}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileSnooper.Contracts", "FileSnooper.Contracts\FileSnooper.Contracts.csproj", "{6B863669-9EDE-4590-85EB-1569825DF2A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileSnooper.Contracts", "FileSnooper.Contracts\FileSnooper.Contracts.csproj", "{6B863669-9EDE-4590-85EB-1569825DF2A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeartBeatSnooperReader", "HeartBeatSnooperReader\HeartBeatSnooperReader.csproj", "{0EFA956D-0DED-4C2F-929D-DAD8D11DC006}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{6B863669-9EDE-4590-85EB-1569825DF2A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B863669-9EDE-4590-85EB-1569825DF2A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B863669-9EDE-4590-85EB-1569825DF2A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EFA956D-0DED-4C2F-929D-DAD8D11DC006}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EFA956D-0DED-4C2F-929D-DAD8D11DC006}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EFA956D-0DED-4C2F-929D-DAD8D11DC006}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EFA956D-0DED-4C2F-929D-DAD8D11DC006}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
