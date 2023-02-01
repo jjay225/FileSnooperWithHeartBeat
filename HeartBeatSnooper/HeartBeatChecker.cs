@@ -11,6 +11,7 @@ using HeartBeatSnooper.Services;
 using System.Web.Http;
 using Microsoft.Extensions.Configuration;
 using FileSnooper.Contracts.Classes;
+using FileSnooper.Contracts.Services;
 
 namespace HeartBeatSnooper
 {

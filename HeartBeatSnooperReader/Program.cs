@@ -10,7 +10,7 @@ executablePath = dirFullName + "/";
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
-        services.AddHostedService<Worker>();
+        services.AddHostedService<SnooperReaderWorker>();
     })
     .ConfigureAppConfiguration((hostContext, config) =>
     {

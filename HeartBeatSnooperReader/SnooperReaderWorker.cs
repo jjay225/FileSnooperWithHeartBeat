@@ -1,12 +1,12 @@
 namespace HeartBeatSnooperReader
 {
-    public class Worker : BackgroundService
+    public class SnooperReaderWorker : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
+        private readonly ILogger<SnooperReaderWorker> _logger;
         private readonly IConfiguration _config;
         private readonly int _workerDelayInMilliseconds;
-        public Worker(
-            ILogger<Worker> logger,
+        public SnooperReaderWorker(
+            ILogger<SnooperReaderWorker> logger,
             IConfiguration config)
         {
             _logger = logger;
