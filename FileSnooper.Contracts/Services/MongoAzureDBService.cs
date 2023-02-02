@@ -1,11 +1,14 @@
 ﻿
+using FileSnooper.Contracts.Classes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace FileSnooper.Contracts.Services
@@ -29,12 +32,24 @@ namespace FileSnooper.Contracts.Services
             _connString = _config.GetValue<string>("MongoConnectionString");
             
         }
-        public void Create<T>(T data)
+        public async Task Create<T>(T data)
         {    
             var db = Client.GetDatabase(_config.GetValue<string>("MongoDBName"));
             var collection = db.GetCollection<T>(_config.GetValue<string>("MongoDBCollection"));
-
-            collection.InsertOne(data);
+           
+            await collection.InsertOneAsync(data);
         }
+
+        public async Task<List<T>> GetListData<T>(FilterDefinition<BsonDocument> fieldFilterDefinition)
+        {
+            var collection = Client.GetDatabase(_config.GetValue<string>("MongoDBName")).GetCollection<BsonDocument>(_config.GetValue<string>("MongoDBCollection"));         
+            var docList = await collection.Find(fieldFilterDefinition).ToListAsync();
+
+            var documentListTemp = await collection.FindAsync<T>(fieldFilterDefinition);
+            var heartBeatList = documentListTemp?.ToList();
+
+            return heartBeatList;        
+        }
+
     }
 }

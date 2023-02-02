@@ -1,4 +1,6 @@
+using FileSnooper.Contracts.Services;
 using HeartBeatSnooperReader;
+using HeartBeatSnooperReader.Services;
 using Serilog;
 
 var executablePath = Environment.CurrentDirectory + "\\";
@@ -10,7 +12,11 @@ executablePath = dirFullName + "/";
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
-        services.AddHostedService<SnooperReaderWorker>();
+        services.AddHostedService<SnooperReaderWorker>()
+        .AddScoped<IAzureCosmosDBService, MongoAzureDBService>()
+        .AddScoped<ISnooperHeartbeatCompareService, SnooperHeartbeatCompareService>();
+       
+
     })
     .ConfigureAppConfiguration((hostContext, config) =>
     {
