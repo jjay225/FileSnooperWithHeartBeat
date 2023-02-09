@@ -33,22 +33,18 @@ namespace FileSnooper.Contracts.Services
             
         }
         public async Task Create<T>(T data)
-        {    
-            var db = Client.GetDatabase(_config.GetValue<string>("MongoDBName"));
-            var collection = db.GetCollection<T>(_config.GetValue<string>("MongoDBCollection"));
-           
+        {
+            var collection = Client.GetDatabase(_config.GetValue<string>("MongoDBName")).GetCollection<T>(_config.GetValue<string>("MongoDBCollection"));
+          
             await collection.InsertOneAsync(data);
         }
 
-        public async Task<List<T>> GetListData<T>(FilterDefinition<BsonDocument> fieldFilterDefinition)
-        {
-            var collection = Client.GetDatabase(_config.GetValue<string>("MongoDBName")).GetCollection<BsonDocument>(_config.GetValue<string>("MongoDBCollection"));         
-            var docList = await collection.Find(fieldFilterDefinition).ToListAsync();
+        public async Task<List<T>> GetListData<T>(FilterDefinition<T> fieldFilterDefinition)
+        {          
+            var collection = Client.GetDatabase(_config.GetValue<string>("MongoDBName")).GetCollection<T>(_config.GetValue<string>("MongoDBCollection"));
+            var results = collection.Find<T>(fieldFilterDefinition).ToList();
 
-            var documentListTemp = await collection.FindAsync<T>(fieldFilterDefinition);
-            var heartBeatList = documentListTemp?.ToList();
-
-            return heartBeatList;        
+            return results;        
         }
 
     }

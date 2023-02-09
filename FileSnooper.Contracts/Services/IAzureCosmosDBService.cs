@@ -12,6 +12,6 @@ namespace FileSnooper.Contracts.Services
     {
         Task Create<T>(T data);
 
-        Task<List<T>> GetListData<T>(FilterDefinition<BsonDocument> fieldFilterDefinition);
+        Task<List<T>> GetListData<T>(FilterDefinition<T> fieldFilterDefinition);
     }
 }

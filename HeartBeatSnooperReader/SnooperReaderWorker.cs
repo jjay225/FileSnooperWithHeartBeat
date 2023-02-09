@@ -43,7 +43,7 @@ namespace HeartBeatSnooperReader
 
         private async Task GetPingData()
         {
-            var dateTimeIntervalToFilter = DateTime.Now.AddMinutes(_minutesToFilterBack);
+            var dateTimeIntervalToFilter = DateTime.UtcNow.AddMinutes(-_minutesToFilterBack);
             
             using IServiceScope scope = _serviceProvider.CreateScope();
             ISnooperHeartbeatCompareService snooperHeartbeatCompareService= scope.ServiceProvider.GetRequiredService<ISnooperHeartbeatCompareService>();
