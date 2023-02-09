@@ -4,6 +4,6 @@ namespace HeartBeatSnooperReader.Services
 {
     public interface ISnooperHeartbeatCompareService
     {
-        Task<List<FileSnooperPingData>> GetLatestPingDataByInterval(DateTime filter);
+        Task GetLatestPingDataByInterval(DateTime filter);
     }
 }

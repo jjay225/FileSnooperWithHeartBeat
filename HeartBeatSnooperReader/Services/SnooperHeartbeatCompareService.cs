@@ -13,23 +13,28 @@ namespace HeartBeatSnooperReader.Services
 {
     public class SnooperHeartbeatCompareService : ISnooperHeartbeatCompareService
     {
+        private readonly ILogger<SnooperHeartbeatCompareService> _logger;
         private readonly IAzureCosmosDBService _azureCosmosDBService;
+        private readonly ISendGridService _sendGridService;
 
-        public SnooperHeartbeatCompareService(IAzureCosmosDBService azureCosmosDBService)
+        public SnooperHeartbeatCompareService(
+            ILogger<SnooperHeartbeatCompareService> logger,
+            IAzureCosmosDBService azureCosmosDBService,
+            ISendGridService sendGridService)
         {
+            _logger = logger;
             _azureCosmosDBService = azureCosmosDBService;
+            _sendGridService = sendGridService;
         }
-        public async Task<List<FileSnooperPingData>> GetLatestPingDataByInterval(DateTime filter)
+        public async Task GetLatestPingDataByInterval(DateTime filter)
         {
-            var filterDef = Builders<FileSnooperPingData>.Filter.Gte("TimeSent", filter) & Builders<FileSnooperPingData>.Filter.Lte("TimeSent", DateTime.UtcNow);
-            var results = await _azureCosmosDBService.GetListData<FileSnooperPingData>(filterDef);
-            foreach (var result in results)
+            var filterDef = Builders<FileSnooperPingData>.Filter.Gte("TimeSent", filter) & Builders<FileSnooperPingData>.Filter.Lt("TimeSent", DateTime.UtcNow);
+            var results = await _azureCosmosDBService.GetListData(filterDef);
+           
+            if(results.Count < 2) 
             {
-                await Console.Out.WriteLineAsync($"Date Sent: {result.TimeSent}");
+                await _sendGridService.SendEmailTest();
             }
-
-
-            throw new NotImplementedException();
         }
     }
 }
