@@ -13,18 +13,26 @@ namespace HeartBeatSnooperReader.Services
     {
         private readonly ILogger _logger;
         private readonly ISendGridClient _sendGridClient;
+        private readonly IConfiguration _config;
+        private readonly string _emailFrom;
+        private readonly string _emailTo;
+
 
         public SendGridService(
             ILogger<SendGridService> logger,
-            ISendGridClient sendGridClient)
+            ISendGridClient sendGridClient,
+            IConfiguration config)
         {
             _logger = logger;
             _sendGridClient = sendGridClient;
+            _config = config;
+            _emailFrom = _config.GetValue<string>("EmailFrom");
+            _emailTo = _config.GetValue<string>("EmailTo");
         }
         public async Task SendEmailTest()
         {
-            var from = new EmailAddress("");
-            var to = new EmailAddress("");
+            var from = new EmailAddress(_emailFrom);
+            var to = new EmailAddress(_emailTo);
             var msg = new SendGridMessage
             {
                 From = from,
