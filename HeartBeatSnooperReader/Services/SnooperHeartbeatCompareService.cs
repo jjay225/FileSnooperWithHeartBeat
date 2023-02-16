@@ -26,14 +26,14 @@ namespace HeartBeatSnooperReader.Services
             _azureCosmosDBService = azureCosmosDBService;
             _sendGridService = sendGridService;
         }
-        public async Task GetLatestPingDataByInterval(DateTime filter)
+        public async Task GetLatestHeartDataByInterval(DateTime filter)
         {
             var filterDef = Builders<FileSnooperPingData>.Filter.Gte("TimeSent", filter) & Builders<FileSnooperPingData>.Filter.Lt("TimeSent", DateTime.UtcNow);
             var results = await _azureCosmosDBService.GetListData(filterDef);
            
             if(results.Count < 2) 
             {
-                await _sendGridService.SendEmailTest();
+                await _sendGridService.SendAlertEmail();
             }
         }
     }

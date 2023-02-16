@@ -3,5 +3,6 @@
     public interface ISendGridService
     {
         Task SendEmailTest();
+        Task SendAlertEmail();
     }
 }

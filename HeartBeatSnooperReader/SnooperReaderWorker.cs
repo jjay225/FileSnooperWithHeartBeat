@@ -7,7 +7,7 @@ namespace HeartBeatSnooperReader
         private readonly ILogger<SnooperReaderWorker> _logger;
         private readonly IConfiguration _config;
         private readonly IServiceProvider _serviceProvider;
-        private readonly int _workerDelayInMilliseconds;
+        private readonly int _workerDelayInMinutes;
         private readonly int _minutesToFilterBack;
         public SnooperReaderWorker(
             ILogger<SnooperReaderWorker> logger,
@@ -18,16 +18,16 @@ namespace HeartBeatSnooperReader
             _config = config;
             _serviceProvider = serviceProvider;
             
-            _workerDelayInMilliseconds = _config.GetValue<int>("WorkerServiceDelayInMilliseconds");
+            _workerDelayInMinutes = _config.GetValue<int>("WorkerServiceDelayInMinutes");
             _minutesToFilterBack = _config.GetValue<int>("MinutesToFilterBack");
 
-            if(_workerDelayInMilliseconds == 0)
+            if(_workerDelayInMinutes == 0)
             {
                 _logger.LogDebug("Failure retrieving config for Worker Delay!");
-                _workerDelayInMilliseconds = 20000;
+                _workerDelayInMinutes = 10;
             }
 
-            _logger.LogDebug("Worker delay is currently: {workerDelay}", _workerDelayInMilliseconds);
+            _logger.LogDebug("Worker delay is currently: {workerDelay}", _workerDelayInMinutes);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -35,20 +35,23 @@ namespace HeartBeatSnooperReader
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(_workerDelayInMilliseconds, stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(_workerDelayInMinutes), stoppingToken);
 
-                await GetPingData();
+                await GetHeartBeatData();
             }
         }
 
-        private async Task GetPingData()
+        private async Task GetHeartBeatData()
         {
+            _logger.LogDebug("Current time is: ", DateTime.Now);
+            if(DateTime.Now.Hour < 8 && DateTime.Now.Hour < 22) { return; }
+
             var dateTimeIntervalToFilter = DateTime.UtcNow.AddMinutes(-_minutesToFilterBack);
             
             using IServiceScope scope = _serviceProvider.CreateScope();
             ISnooperHeartbeatCompareService snooperHeartbeatCompareService= scope.ServiceProvider.GetRequiredService<ISnooperHeartbeatCompareService>();
 
-            await snooperHeartbeatCompareService.GetLatestPingDataByInterval(dateTimeIntervalToFilter);
+            await snooperHeartbeatCompareService.GetLatestHeartDataByInterval(dateTimeIntervalToFilter);
         }
     }
 }

@@ -44,5 +44,23 @@ namespace HeartBeatSnooperReader.Services
             var response = await _sendGridClient.SendEmailAsync(msg);
             _logger.LogDebug("Status code from SendGrid is: {statusCode}", response.StatusCode);
         }
+
+        public async Task SendAlertEmail()
+        {
+            _logger.LogDebug("Sending alert email to: {emailTo}", _emailTo);
+
+            var from = new EmailAddress(_emailFrom);
+            var to = new EmailAddress(_emailTo);
+            var msg = new SendGridMessage
+            {
+                From = from,
+                Subject = $"File Snooper Alert! - {DateTime.UtcNow}"
+            };
+            msg.AddContent(MimeType.Html, "<strong><u>Attention!</u></strong><br><br>Your File Snooper backup service may be down or not functioning correctly");
+            msg.AddTo(to);
+
+            var response = await _sendGridClient.SendEmailAsync(msg);
+            _logger.LogDebug("Status code from SendGrid is: {statusCode}", response.StatusCode);
+        }
     }
 }

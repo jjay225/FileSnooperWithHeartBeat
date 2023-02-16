@@ -45,14 +45,17 @@ namespace HeartBeatSnooper
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var fileSnooperPing = new FileSnooperPingData();
                 var isPostman = false;
-                var userAgent = req.Headers.Where(x => x.Key == "User-Agent")?.First().Value.ToString();
-                if(userAgent != null)
+                if(req.Headers.ContainsKey("User-Agent"))
                 {
-                    if(userAgent.ToLower().Contains("postman"))
+                    var userAgent = req.Headers.Where(x => x.Key == "User-Agent")?.First().Value.ToString();
+                    if (userAgent != null)
                     {
-                        isPostman = true;
+                        if (userAgent.ToLower().Contains("postman"))
+                        {
+                            isPostman = true;
+                        }
                     }
-                }
+                }              
 
                 if(isPostman)
                 {

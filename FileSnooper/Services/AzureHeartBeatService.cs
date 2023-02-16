@@ -39,28 +39,35 @@ namespace FileSnooper.Services
         }
         public async Task Pulse()
         {
-            _logger.LogDebug("Sending pulse to azure heart beat service at: {time} ", DateTime.Now);
-            var client = _httpClientFactory.CreateClient(ClientName);
-
-            var pingData = new FileSnooperPingData
+            try
             {
-                Identifier = _identifier,
-                TimeSent = DateTime.Now
-            };
+                _logger.LogDebug("Sending pulse to azure heart beat service at: {time} ", DateTime.Now);
+                var client = _httpClientFactory.CreateClient(ClientName);
 
-            var serializedContent = JsonSerializer.Serialize(pingData);
-            _logger.LogDebug("Ping Data to send: {pingData}", serializedContent);
+                var pingData = new FileSnooperPingData
+                {
+                    Identifier = _identifier,
+                    TimeSent = DateTime.Now
+                };
 
-            var clientResponse = await client.PostAsJsonAsync(requestUri: _azureHeartBeatServiceFunctionUrlPath, value: pingData);
-            var stringResponse = await clientResponse.Content.ReadAsStringAsync();//do more with this later maybe
-            if(clientResponse.IsSuccessStatusCode)
-            {
-                _logger.LogDebug("Successfully sent pulse to heart beat service");
+                var serializedContent = JsonSerializer.Serialize(pingData);
+                _logger.LogDebug("Ping Data to send: {pingData}", serializedContent);
+
+                var clientResponse = await client.PostAsJsonAsync(requestUri: _azureHeartBeatServiceFunctionUrlPath, value: pingData);
+                var stringResponse = await clientResponse.Content.ReadAsStringAsync();//do more with this later maybe
+                if (clientResponse.IsSuccessStatusCode)
+                {
+                    _logger.LogDebug("Successfully sent pulse to heart beat service");
+                }
+                else
+                {
+                    _logger.LogError("Failed to send pulse to heart beat service! String Response: {response}", stringResponse);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _logger.LogError("Failed to send pulse to heart beat service! String Response: {response}", stringResponse);
-            }
+                _logger.LogError("Exception sending heartbeat pulse to Azure! Error details: {errorDetail}", ex);
+            }           
         }
     }
 }
