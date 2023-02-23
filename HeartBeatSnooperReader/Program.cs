@@ -15,7 +15,7 @@ IHost host = Host.CreateDefaultBuilder(args)
      .ConfigureAppConfiguration((hostContext, config) =>
      {
          var configBuilder = config
-         .AddJsonFile($"{executablePath}appsettings.json", optional: true, reloadOnChange: true)
+         .AddJsonFile($"{executablePath}appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true)
          .Build();
 
          sendGridApiKey = configBuilder.GetValue<string>("SendGridApiKey");

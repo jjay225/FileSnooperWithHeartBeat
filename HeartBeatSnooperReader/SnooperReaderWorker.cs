@@ -43,9 +43,9 @@ namespace HeartBeatSnooperReader
 
         private async Task GetHeartBeatData()
         {
-            _logger.LogDebug("Current time is: ", DateTime.Now);
+            _logger.LogDebug("Current time is: {currentTime}", DateTime.Now);
             if(DateTime.Now.Hour < 8 && DateTime.Now.Hour < 22) { return; }
-
+            
             var dateTimeIntervalToFilter = DateTime.UtcNow.AddMinutes(-_minutesToFilterBack);
             
             using IServiceScope scope = _serviceProvider.CreateScope();

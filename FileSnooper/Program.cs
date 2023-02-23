@@ -47,8 +47,6 @@ namespace FileSnooper
 
         public static void CreateHostBuilder(string[] args)
         {
-        
-
             Host.CreateDefaultBuilder(args)
              .UseWindowsService()
              .UseContentRoot(_contentRoute)
@@ -62,8 +60,7 @@ namespace FileSnooper
                    config
                    .SetBasePath(_contentRoute)
                    .AddJsonFile($"{_contentRoute}apppsettings.json", optional: true, reloadOnChange: true)
-                   .AddJsonFile($"{_contentRoute}appsettings.json.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true).Build();
-
+                   .AddJsonFile($"{_contentRoute}appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true).Build();
                  
                  _azureHeartBeatServiceBase = configBuilder.GetValue<string>("AzureHeartBeatServiceHostBase");
 

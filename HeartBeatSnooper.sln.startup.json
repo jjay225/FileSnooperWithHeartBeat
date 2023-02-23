@@ -18,8 +18,14 @@
         "HeartBeatSnooper": {},
         "HeartBeatSnooperReader": {}
       }
+    },
+    "SnooperAndAzureFunction": {
+      "Projects": {
+        "FileSnooper": {},
+        "HeartBeatSnooper": {}
+      }
     }
-    
+
 
   }
 }
