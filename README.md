@@ -39,3 +39,24 @@ The main project is **_FileSnooper_**, this uses FileSytemWatchers and a Worker 
 
 The second project is **_HeartBeatSnooper_** and this is an Azure Function with a Http Trigger. It receive a *Heartbeat*/*Pulse*/*Ping* from the FileSnooper project and sends that to a cloud db for storage. Currently using a MongoDB API on CosmosDB in Azure.
 
+---
+
+The third project is **_HeartBeatSnooperReader_** is also a Worker service which runs in docker. Didn't have to be docker but just felt like experimenting running this in Azure as a Container Instance. It's config is as follows:
+
+```JSON
+{
+  "WorkerServiceDelayInMinutes": 2,
+  "MinutesToFilterBack": 30,
+  "MongoConnectionString": "",
+  "MongoDBName": "",
+  "MongoDBCollection": "",
+  "SendGridApiKey": "",
+  "SendGridEmailAddress": "",
+  "SendGridEmailAddresses": "",
+  "SendGridEmailName": ""
+}
+
+```
+
+- *MinutesToFilterBack* : So what this setting does is u specify how far to query back in time on the cloud DB for retrieving heartbeat data linked to intervals you would like to query.
+- *WorkerServiceDelayInMinutes*: This is used in conjunction with *MinutesToFilterBack*. So say you send a Heartbeat every 5 minutes from the *FileSnooper* project, you can then set this WorkerServiceDelayInMinutes to fire off every 12 minutes for instance and search back say 12 minutes with the *MinutesToFilterBack* and then you would find two records in the cloud DB. If you don't find two records that could mean the FileSnooper service is down because it should have sent two Heartbeats from whatever pc it is running on in a 10 minute window because it sends every 5 minutes.
