@@ -5,10 +5,6 @@
     <UserSecretsId>1a72ac28-3c51-4429-903f-34bbe6e10f80</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Services\IAzureCosmosDBService.cs" />
-    <Compile Remove="Services\MongoAzureDBService.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="4.0.0" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.SendGrid" Version="3.0.2" />

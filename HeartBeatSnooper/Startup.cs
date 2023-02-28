@@ -1,5 +1,4 @@
 ﻿using FileSnooper.Contracts.Services;
-using HeartBeatSnooper.Services;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 

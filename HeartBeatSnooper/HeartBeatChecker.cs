@@ -7,7 +7,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
-using HeartBeatSnooper.Services;
 using System.Web.Http;
 using Microsoft.Extensions.Configuration;
 using FileSnooper.Contracts.Classes;
