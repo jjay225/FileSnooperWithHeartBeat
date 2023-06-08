@@ -27,6 +27,15 @@ namespace FileSnooper.Helpers
             }
         }
 
+        public static bool HasSameRootFolder(string filePath, string rootFolderPath)
+        {
+            string fullPathRootFolder = Path.GetFullPath(rootFolderPath);
+            string relativePath = Path.GetRelativePath(fullPathRootFolder, filePath);
+
+           
+            return !relativePath.StartsWith("..");
+        }
+
         public static bool DirectoryEqualsV2(string d1, string d2)
         {
             DirectoryInfo dirInfo1 = new DirectoryInfo(d1);

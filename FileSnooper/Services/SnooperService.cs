@@ -14,6 +14,7 @@ using FileSnooper.Helpers;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Options;
 using FileSnooper.Contracts.Classes;
+using System.Xml.Linq;
 
 namespace FileSnooper.Services
 {
@@ -29,8 +30,6 @@ namespace FileSnooper.Services
         private static AsyncRetryPolicy RetryPolicyAsync { get; set; }
         private string CurrentFileName { get; set; }
 
-        //private string CurrentFilePath { get; set; }
-        //private string FileTargetPath { get; set; }
         private int RetryCount { get; set; }
 
         public SnooperService(
@@ -64,6 +63,7 @@ namespace FileSnooper.Services
             //Attempt to move files. Execute it in Polly Retry policy
             try
             {
+                _logger.LogDebug("Proceeding to move files!");
                 RetryCount = 0;
                 await RetryPolicyAsync.ExecuteAsync(() => MoveFiles());
             }
@@ -92,52 +92,42 @@ namespace FileSnooper.Services
                     var CurrentFileName = cacheEntry.Key.ToString();
                     var CurrentFilePath = cacheEntry.Value.ToString();
 
-                    if (File.Exists(CurrentFilePath))
-                    {
-                        foreach (var item in _fileMonitorPaths)
-                        {
-                            SetFileTargetPath(item, ref FileTargetPath, ref CurrentFilePath);
-                        }
-                    }
-                    else
+                    if(!File.Exists(CurrentFilePath))
                     {
                         _logger.LogWarning("File {fileName} does not exist or is NOT an actual file. Removing it from cache.", CurrentFileName);
                         await _cacheService.RemoveCacheItem(CurrentFileName);
                     }
-
-                    if (FileTargetPath != null)
-                    {
-                        if (File.Exists(CurrentFilePath)) // double check for tmp rename and delete operations from apps during editing
-                        {
-                            var destinationFilePath = Path.Combine(FileTargetPath, CurrentFileName);
-
-                            File.Copy(CurrentFilePath, destinationFilePath, true);
-                            _logger.LogInformation("File copied from {sourcePath} to {destinationPath}", CurrentFilePath, destinationFilePath);
-                            await _cacheService.RemoveCacheItem(CurrentFileName);
-                        }
-                    }
                     else
                     {
-                        _logger.LogError("No target path found for file: {fileName}", CurrentFileName);
-                    }
-                }
-            }
-        }
 
-        private void SetFileTargetPath(FileMonitorPaths item, ref string FileTargetPath, ref string CurrentFilePath)
-        {
-            if (PathComparer.DirectoryEquals(new DirectoryInfo(item.Source), new DirectoryInfo(CurrentFilePath)))
-            {
-                FileTargetPath = item.Target;
-            }
-            else
-            {
-                if (PathComparer.DirectoryEqualsV2(item.Source, CurrentFilePath))
-                {
-                    FileTargetPath = item.Target;
+                        foreach (var item in _fileMonitorPaths)
+                        {
+                            if(PathComparer.HasSameRootFolder(filePath: CurrentFilePath, rootFolderPath: item.Source))
+                            {
+                                var monitoredRootPath = Path.GetFullPath(item.Source);
+                                var relativePath = Path.GetRelativePath(monitoredRootPath, CurrentFilePath);
+
+                                var destinationFilePath = Path.Combine(item.Target, relativePath);
+                                var destinationDirectoryPath = Path.GetDirectoryName(destinationFilePath);
+
+                                if (!Directory.Exists(destinationDirectoryPath))
+                                {
+                                    Directory.CreateDirectory(destinationDirectoryPath);
+                                }
+
+                                File.Copy(CurrentFilePath, destinationFilePath, overwrite: true);
+
+                                _logger.LogInformation("File copied from {sourcePath} to {destinationPath}", CurrentFilePath, destinationFilePath);
+                                await _cacheService.RemoveCacheItem(CurrentFileName);
+
+
+                            }
+                        }
+                    }
+                   
                 }
             }
-        }
+        }     
 
         private void SetupRetryPolicy()
         {

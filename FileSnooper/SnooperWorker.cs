@@ -75,6 +75,7 @@ namespace FileSnooper
             //SetupDeletedEvents();//keeping for later maybe
             SetupRenamedEvents();
 
+
             return base.StartAsync(cancellationToken);
         }
 
@@ -90,16 +91,19 @@ namespace FileSnooper
             if (FileSnooper1 != null)
             {
                 FileSnooper1.Created += FileSnooper_Created;
+                FileSnooper1.IncludeSubdirectories = true;
             }
 
             if (FileSnooper2 != null)
             {
                 FileSnooper2.Created += FileSnooper_Created;
+                FileSnooper2.IncludeSubdirectories = true;
             }
 
             if (FileSnooper3 != null)
             {
                 FileSnooper3.Created += FileSnooper_Created;
+                FileSnooper3.IncludeSubdirectories = true;
             }
         }
 
@@ -157,6 +161,7 @@ namespace FileSnooper
             }
         }
 
+
         private async void FileSnooper_Changed(object sender, FileSystemEventArgs e)
         {
             if (CheckIfTmpFile(e.FullPath)) return;
@@ -202,9 +207,9 @@ namespace FileSnooper
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(TimeSpan.FromMinutes(_snoopDelayInMinutes), stoppingToken);                
+                await Task.Delay(TimeSpan.FromMinutes(_snoopDelayInMinutes), stoppingToken);           
                 await _snooperService.UploadFilesInCache();
-                await _azureHeartBeatService.Pulse();
+                //await _azureHeartBeatService.Pulse(); //Will add a switch for this
             }
         }
 
@@ -234,8 +239,8 @@ namespace FileSnooper
 
         private static bool CheckIfTmpFile(string fullPath)
         {
-            var ext = Path.GetExtension(fullPath);
-            if (ext.ToLower() == ".tmp")
+            var ext = Path.GetExtension(fullPath);            
+            if (ext.ToLower() == ".tmp" || ext.ToLower() == ".pst")
             {
                 return true;
             }

@@ -9,6 +9,7 @@ using System.Reflection;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using FileSnooper.Contracts.Classes;
+using System.IO;
 
 namespace FileSnooper
 {
@@ -18,9 +19,15 @@ namespace FileSnooper
         private static string _azureHeartBeatServiceBase;
         public static void Main(string[] args)
         {
-            var executablePath = Environment.CurrentDirectory + "\\";
-            var exeFullName = Assembly.GetExecutingAssembly().Location;
+
+
+            var pathTemp = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+            var exeFileNameIndex = pathTemp.LastIndexOf(@"\");
+            var exeFileName = pathTemp[(exeFileNameIndex + 1)..];
+            var executablePath = pathTemp.Replace(exeFileName, "");
             _contentRoute = executablePath;
+
+
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
